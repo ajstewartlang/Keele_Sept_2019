@@ -12,15 +12,17 @@ library(viridis)
 
 #data1 <- tibble(id, wm, iq, comp)
 
-data1 <- read_csv
+data1 <- read_csv("https://bit.ly/2OTkuNz")
 
 # Create data for 48 participants (all present in data) taking part in an experiment
-set.seed(1234)
-id <- sample(id, 48)
-simple_sentence <- as.integer(rnorm(48, mean = 2000, sd = 140))
-complex_sentence <- as.integer(rnorm(48, mean = 2400, sd = 160))
+#set.seed(1234)
+#id <- sample(id, 48)
+#simple_sentence <- as.integer(rnorm(48, mean = 2000, sd = 140))
+#complex_sentence <- as.integer(rnorm(48, mean = 2400, sd = 160))
 
-dataRT <- tibble(id, simple_sentence, complex_sentence)
+#dataRT <- tibble(id, simple_sentence, complex_sentence)
+
+dataRT <- read_csv("https://bit.ly/31xd6sG")
 
 # Combine the data1 and dataRT datasets using the inner_join() function
 # Map this onto a new variable we're calling dataRT_all
@@ -51,6 +53,8 @@ rt <- as.integer(rnorm (24*4, 1000,100))
 
 my_data <- tibble(participant, condition, rt)
 my_data
+
+my_data <- read_csv("https://bit.ly/2YYcP4B")
 
 # Recode condition columns follows:
 # Condition 1 = prime A, target A
