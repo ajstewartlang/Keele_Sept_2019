@@ -1,3 +1,3 @@
 library(tidyverse)
 
-read_csv(data, "mult_preds.csv")
+my_data <- read_csv("https://bit.ly/31FxhF4")
