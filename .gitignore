@@ -34,3 +34,8 @@ vignettes/*.pdf
 # Temporary files created by R markdown
 *.utf8.md
 *.knit.md
+
+Morning/morning_slides.key
+
+Afternoon/afternoon_slides.key
+.Rproj.user

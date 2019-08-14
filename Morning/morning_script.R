@@ -1,21 +1,22 @@
 library(tidyverse)
 library(viridis)
-library(ggrepel)
 
 # Data tidying and wranling ####
 # Create data for 10,000 people - each with measures of Working Memory (WM), IQ, and 
 # reading Comprehension (Comp)
-set.seed(1234)
-id <- seq(1:10000)
-wm <- as.integer(rnorm(10000, mean = 50, sd = 5))
-iq <- as.integer(rnorm(10000, mean = 100, sd = 15))
-comp <- as.integer(rnorm(10000, mean = 20, sd = 2))
+#set.seed(1234)
+#wm <- as.integer(rnorm(10000, mean = 50, sd = 5))
+#id <- seq(1:10000)
+#iq <- as.integer(rnorm(10000, mean = 100, sd = 15))
+#comp <- as.integer(rnorm(10000, mean = 20, sd = 2))
 
-data1 <- tibble(id, wm, iq, comp)
+#data1 <- tibble(id, wm, iq, comp)
+
+data1 <- read_csv
 
 # Create data for 48 participants (all present in data) taking part in an experiment
 set.seed(1234)
-id <- sample(ID, 48)
+id <- sample(id, 48)
 simple_sentence <- as.integer(rnorm(48, mean = 2000, sd = 140))
 complex_sentence <- as.integer(rnorm(48, mean = 2400, sd = 160))
 
