@@ -4,23 +4,10 @@ library(viridis)
 # Data tidying and wranling ####
 # Create data for 10,000 people - each with measures of Working Memory (WM), IQ, and 
 # reading Comprehension (Comp)
-#set.seed(1234)
-#wm <- as.integer(rnorm(10000, mean = 50, sd = 5))
-#id <- seq(1:10000)
-#iq <- as.integer(rnorm(10000, mean = 100, sd = 15))
-#comp <- as.integer(rnorm(10000, mean = 20, sd = 2))
-
-#data1 <- tibble(id, wm, iq, comp)
 
 data1 <- read_csv("https://bit.ly/2OTkuNz")
 
 # Create data for 48 participants (all present in data) taking part in an experiment
-#set.seed(1234)
-#id <- sample(id, 48)
-#simple_sentence <- as.integer(rnorm(48, mean = 2000, sd = 140))
-#complex_sentence <- as.integer(rnorm(48, mean = 2400, sd = 160))
-
-#dataRT <- tibble(id, simple_sentence, complex_sentence)
 
 dataRT <- read_csv("https://bit.ly/31xd6sG")
 
@@ -46,12 +33,6 @@ data_long %>%
 
 # Recode one column capturing 2x2 and then splitting
 # First create the data set - 24 items each with one RT measure for each of 4 conditions
-#participant <- rep(1:24, each = 4)
-#condition <- rep(1:4, times = 24)
-#set.seed(1234)
-#rt <- as.integer(rnorm (24*4, 1000,100))
-
-#my_data <- tibble(participant, condition, rt)
 
 my_data <- read_csv("https://bit.ly/2YYcP4B")
 my_data
@@ -96,11 +77,6 @@ ggplot(data_summ, aes (x = condition, y = Mean, group = condition,
   guides(fill = FALSE) 
 
 # When boxplots can mislead
-#subject <- seq(1:80)
-#group <- factor(rep(1,80))
-#set.seed(1234)
-#rt <- c(rnorm(40,500,200), rnorm(40,1900,200))
-#data2 <- tibble(subject, group, rt)
 
 data2 <- read_csv("https://bit.ly/2YYr6dm")
 
