@@ -86,4 +86,4 @@ vif(steplimitsboth)
 
 # ANOVA ####
 
-
+cond <- read_csv("https://bit.ly/33xm62R")
