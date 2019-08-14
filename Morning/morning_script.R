@@ -45,16 +45,16 @@ data_long %>%
   summarise(Mean = mean(rt), Min = min(rt), Max = max(rt), SD = sd(rt))
 
 # Recode one column capturing 2x2 and then splitting
-# Dirst create the data set - 24 items each with one RT measure for each of 4 conditions
-participant <- rep(1:24, each = 4)
-condition <- rep(1:4, times = 24)
-set.seed(1234)
-rt <- as.integer(rnorm (24*4, 1000,100))
+# First create the data set - 24 items each with one RT measure for each of 4 conditions
+#participant <- rep(1:24, each = 4)
+#condition <- rep(1:4, times = 24)
+#set.seed(1234)
+#rt <- as.integer(rnorm (24*4, 1000,100))
 
-my_data <- tibble(participant, condition, rt)
-my_data
+#my_data <- tibble(participant, condition, rt)
 
 my_data <- read_csv("https://bit.ly/2YYcP4B")
+my_data
 
 # Recode condition columns follows:
 # Condition 1 = prime A, target A
@@ -96,16 +96,18 @@ ggplot(data_summ, aes (x = condition, y = Mean, group = condition,
   guides(fill = FALSE) 
 
 # When boxplots can mislead
-subject <- seq(1:80)
-group <- factor(rep(1,80))
-set.seed(1234)
-rt <- c(rnorm(40,500,200), rnorm(40,1900,200))
-data1 <- tibble(subject, group, rt)
+#subject <- seq(1:80)
+#group <- factor(rep(1,80))
+#set.seed(1234)
+#rt <- c(rnorm(40,500,200), rnorm(40,1900,200))
+#data2 <- tibble(subject, group, rt)
 
-ggplot(data1, aes(x = group, y = rt)) + geom_boxplot()
-ggplot(data1, aes(x = group, y = rt)) + geom_jitter(size = 2, width = .1, alpha = .25)
-ggplot(data1, aes(x = group, y = rt)) + geom_boxplot() + geom_jitter(size = 2, width = .1, alpha = .25)
-ggplot(data1, aes(x = group, y = rt)) + geom_violin() + geom_jitter(width = .1, alpha = .5)
+data2 <- read_csv("https://bit.ly/2YYr6dm")
+
+ggplot(data2, aes(x = group, y = rt)) + geom_boxplot()
+ggplot(data2, aes(x = group, y = rt)) + geom_jitter(size = 2, width = .1, alpha = .25)
+ggplot(data2, aes(x = group, y = rt)) + geom_boxplot() + geom_jitter(size = 2, width = .1, alpha = .25)
+ggplot(data2, aes(x = group, y = rt)) + geom_violin() + geom_jitter(width = .1, alpha = .5)
 
 # Violin Plot
 ggplot(data_long, aes(x = condition, y = rt, group = condition, fill = condition)) + 
