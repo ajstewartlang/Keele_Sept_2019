@@ -85,5 +85,57 @@ confint(steplimitsboth, level=0.95)
 vif(steplimitsboth)
 
 # ANOVA ####
-
+# Load data
 cond <- read_csv("https://bit.ly/33xm62R")
+
+cond$Condition <- as.factor(cond$Condition)
+
+cond %>% 
+  ggplot(aes(x = Condition, y = Ability, colour = Condition)) +
+  geom_violin() +
+  geom_jitter(width = .1) +
+  guides(colour = FALSE) +
+  stat_summary(fun.data = "mean_cl_boot", colour = "black") +
+  theme(text = element_text(size = 15))
+
+cond %>%
+  group_by(Condition) %>%
+  summarise(mean = mean(Ability), sd = sd(Ability))
+
+library(afex)
+library(emmeans)
+
+model <- aov_4(Ability ~ Condition + (1 | Participant), data = cond)
+
+summary(model)
+
+emmeans(model, pairwise ~ Condition)
+
+# Repeated measures ANOVA ####
+rm_data <- read_csv("https://bit.ly/304Koiu")
+rm_data$Condition <- as.factor(rm_data$Condition)
+rm_data
+
+rm_data %>%
+  group_by(Condition) %>%
+  summarise(mean = mean(Score), sd = sd (Score))
+
+rm_data %>%
+  ggplot(aes(x = Condition, y = Score, colour = Condition)) +
+  geom_violin() +
+  geom_jitter(width = .1) +
+  guides(colour = FALSE) +
+  stat_summary(fun.data = "mean_cl_boot", colour = "black") +
+  theme(text = element_text(size = 15))
+
+rm_data %>%
+  ggplot(aes(x = fct_reorder(Condition, Score), y = Score, colour = Condition)) +
+  geom_violin() +
+  geom_jitter(width = .1) +
+  guides(colour = FALSE) +
+  stat_summary(fun.data = "mean_cl_boot", colour = "black") +
+  theme(text = element_text(size = 15)) +
+  labs(x = "Condition")
+
+model <- aov_4(Score ~ Condition + (1 + Condition | Participant), data = rm_data)
+anova(model)
