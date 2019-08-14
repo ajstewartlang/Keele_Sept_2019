@@ -35,7 +35,7 @@ vignettes/*.pdf
 *.utf8.md
 *.knit.md
 
-Morning/morning_slides.key
+/Morning/morning_slides.key
 
-Afternoon/afternoon_slides.key
+/Afternoon/afternoon_slides.key
 .Rproj.user
