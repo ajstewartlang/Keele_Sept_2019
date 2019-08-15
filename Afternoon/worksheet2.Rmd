@@ -1,178 +1,317 @@
 ---
-title: "ANOVA_part_1_lab_script_answers"
+title: "Worksheet 2"
 author: "Andrew Stewart"
-date: "15/11/2018"
+date: "15/08/2019"
 output: html_document
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+# The Linear Model
 
-First we need to load the packages we'll be using - these are the tidyverse, afex (for factorial ANOVA), emmeans (for running pairwise comparisons), and psych (for generating descriptive statistics.)
+First we need to install the packages we need.  We're going to install the `tidyverse` packages plus a few others. The package `Hmisc` allows us to use the `rcorr()` function for calculating Pearson's r.  Remember, if you haven't previously installed these packages on your laptop you first need to type `install.packages("packagename")` in the console before you can call the `library()` function for that package.
+
+```{r, message=FALSE}
+library(tidyverse)
+library(Hmisc)
+```
+
+Import the dataset called `crime_dataset.csv` - this dataset contains population data, housing price index data and crime data for cities in the US.
+
+It is from Kaggle datasets: 
+https://www.kaggle.com/sandeep04201988/housing-price-index-using-crime-rate-data/version/1
+
+We can use the function `head()` to display the first few rows of our dataset called "crime".
+
+```{r, message=FALSE}
+crime <- read_csv("https://www.kaggle.com/sandeep04201988/housing-price-index-using-crime-rate-data/version/1")
+head(crime)
+```
+
+First let's do some wrangling.  There is one column that combines both City and State information.
+Let's separate that information out into two new columns called "City" and "State" using the function `separate()`. Then have a look at what you now have. How has the output of `head(crime)` changed from above?
+
+```{r}
+crime <- separate(crime, 'City, State', into=c("City", "State"))
+head(crime)
+```
+
+Now let's rename the columns to change the name of the "index_nsa" column (which is column 2) to "House_price" and get rid of the space in the "Violent Crimes" heading (which is column 6).  See how the output of `head(crime)` has changed again?
+
+```{r}
+colnames(crime)[2] <- "House_price"
+colnames(crime)[6] <- "Violent_Crimes"
+head(crime)
+```
+
+We might first think that as population size increases, crime rate also increases.  Let's first build a scatter plot.
+
+```{r, warning=FALSE}
+crime %>%
+  ggplot(aes(x = Population, y = Violent_Crimes)) + 
+  geom_point() + 
+  geom_smooth(method = "lm")
+```
+
+This plot looks pretty interesting.  How about calculating Pearson's r?
+
+```{r}
+rcorr(crime$Population, crime$Violent_Crimes)
+```
+
+Look at the r and p-values - r is =.81 and p < .001. So ~64% of the variance in our Violent_Crimes variable is explained by our Population size variable.  Clearly there is a positive relationship between population size and the rate of violent crime. From the plot, we might conclude that the relationship is being overly influenced by crime in a small number of very large cities (top right of the plot above).  Let's exclude cities with populations greater than 2,000,000
+
+```{r}
+crime_filtered <- filter(crime, Population < 2000000)
+```
+
+Now let's redo the plot:
+
+```{r, warning=FALSE}
+crime_filtered %>%
+  ggplot(aes(x = Population, y = Violent_Crimes)) + 
+  geom_point() + 
+  geom_smooth(method = "lm")
+```
+
+And calculate Pearson's r.
+
+```{r}
+rcorr(crime_filtered$Population, crime_filtered$Violent_Crimes)
+```
+
+There is still a clear positive relationship (r=.69).  Let's build a linear model. The dataset contains a lot of data and each city appears a number of times (once each year). For our linear model, our observations need to be independent of each other so let's just focus on the year 2015. That way each city will just appear once.
+
+First we apply our filter.
+
+```{r}
+crime_filtered <- filter(crime_filtered, Year == 2015)
+```
+
+Then we build a plot. I'm using the layer `geom_text()` to plot the City names and set the check_overlap paramter to `TRUE` to ensure the labels don't overlap.
+
+```{r, warning=FALSE}
+crime_filtered %>%
+  ggplot(aes(x = Population, y = Violent_Crimes, label = City)) + 
+  geom_point() + 
+  geom_text(nudge_y = 500, check_overlap = TRUE) + 
+  geom_smooth(method = "lm") + 
+  xlim(0,1800000)
+```
+
+This shows a clear positive linear relationship so let's work out Pearson's r.
+
+```{r}
+rcorr(crime_filtered$Population, crime_filtered$Violent_Crimes)
+```
+
+Imagine we are a city planner, and we want to know by how much we think violent crimes might increase as a function of population size. In other words, we want to work out how the violent crime rate is predicted by population size.
+
+We're going to build two linear models - one `model1` where we're using the mean of our outcome variable as the predictor, and a second `model2` where we are using Population size to predict the Violent Crimes outcome.
+
+```{r}
+model1 <- lm(Violent_Crimes ~ 1, data = crime_filtered)
+model2 <- lm(Violent_Crimes ~ Population, data = crime_filtered)
+```
+
+Let's use the `anova()` function to see if our model with Population as the predictor is better than the one using just the mean.
+
+```{r}
+anova(model1, model2)
+```
+
+It is - the models differ and you'll see the residual sum of squares (or the error) is less in the second model (which has Population as the predictor). This means the deviation between our observed data and the regression line model `model2` is significantly less than the deviation between our observed data and the mean as a model of our data `model1`. So let's get the parameter estimates of `model2`.
+
+```{r}
+summary(model2)
+```
+
+The intercept corresponds to where our regression line intercepts the y-axis, and the Population parameter corresponds to the slope of our line. We see that for every increase in population by 1 there is an extra 0.006963 increase in violent crime. 
+
+For a city with a population of about a million, there will be about 7907 Violent Crimes. We calculate this by multiplying the estimate of our predictor (0.006963) by 1,000,000 and
+then adding the intercept (944.3).  This gives us 7907.3 crimes - which tallys with what you
+see in our regression line above. We may have a few outliers.
+
+# ANOVA
+
+First we need to load the packages we'll be using - these are the `tidyverse`, `afex` (for ANOVA), and `emmeans` (for running pairwise comparisons).
 
 ```{r, message=FALSE}
 library(tidyverse)
 library(afex)
 library(emmeans)
-library(psych)
 ```
 
 ## Question 1
 
-Now you need to load our first data file.  This is called ANOVA_lab1_data1.csv - when you load it, you need to assign it to a new variable called 'data'. Load it using the 'Import Dataset' button in the Environment window of RStudio.
+Now you need to load our first data file.  When we load it, we assign it to a new variable we're caloing `my_data`. Note, the bitly link is just a short cut to where the datafile is in my GitHub account (https://raw.githubusercontent.com/ajstewartlang/Keele_Sept_2019/master/Afternoon/ANOVA_data1.csv).
 
 ```{r, message=FALSE}
-data <- read_csv("ANOVA_lab1_data1.csv")
+my_data <- read_csv("https://bit.ly/2YZRibL")
 ```
 
 24 participants responded to a word that was either common (i.e., high lexical frequency) or rare (i.e., low lexical frequency).  This is our IV and is coded as 'High' vs. 'Low'.  Our DV is reaction time and is coded as 'RT'. Subject number is coded as 'Subject'. We want to know whether there is a difference between conditions (and if so, where that difference lies). Visualise the data, generate descrtiptives, and run the appropriate ANOVA to determine whether our independent variable (Condition) has an influence on our dependent variable (RT).
 
-If you type 'data' you will see the first 10 rows of our dataframe..
+If you type `my_data` you will see the first 10 rows of our dataframe..
 
 ```{r}
-data
+my_data
 ```
 
 We need to set our Condition column to a factor.
 
 ```{r}
-data$Condition <- as.factor(data$Condition)
+my_data$Condition <- as.factor(my_data$Condition)
 ```
 
-We are first going to plot the data using ggplot - we'll used both geom_violin() and geom_jitter() layers - this way we'll be able to see both the distribution shapes, and also the raw data (but jittered so we don't have lots of points basically on top of each other). We're also going to add some summary statistics using the stat_summary function - specifically we're asking for each condition mean plus the 95% confidence interval around each condition mean to be plotted.
+We are first going to plot the data using ggplot - we'll used both `geom_violin()` and `geom_jitter()` layers - this way we'll be able to see both the distribution shapes, and also the raw data (but jittered so we don't have lots of points basically on top of each other). We're also going to add some summary statistics using the `stat_summary` function - specifically we're asking for each condition mean plus the 95% confidence interval around each condition mean to be plotted.
 
 ```{r}
-ggplot(data, aes(x=Condition, y=RT, fill=Condition)) + geom_violin() + 
-  geom_jitter(width=.1, alpha=.5) + stat_summary(fun.data="mean_cl_boot") + guides(fill=FALSE)
+my_data %>%
+  ggplot(aes(x = Condition, y = RT, fill = Condition)) + 
+  geom_violin() + 
+  geom_jitter(width = .1, alpha = .5) + 
+  stat_summary(fun.data = "mean_cl_boot") + 
+  guides(fill = FALSE)
 ```
 
-We're now going to generate some descriptives.  First we will generate them using the describeBy() function in the psych package, and they we're going to do it tidyverse-style.  
+We're now going to generate some descriptives.  Note, we are using the pipe operator `%>%` which allows us to 'pipe' values from left to right.  The following could be read as 'take the dataframe called my_data, pass it along to the function `group_by()` and group our data by condition, pass this grouped data along to the `summarise()` function and give me the mean and SD of the RT values for each group'.
 
 ```{r}
-describeBy(data$RT, group=data$Condition)
+my_data %>% 
+  group_by(Condition) %>% 
+  summarise(mean_rt = mean(RT), sd_rt = sd(RT))
 ```
 
-Note, we are using the pipe operator %>% which allows us to 'pipe' values from left to right.  The following could be read as 'take the dataframe called data, pass it along to the funciton group_by() and group our data by condition, pass this grouped data along to the summarise function and give me the mean and SD of the RT values for each group'.
+We're now going to build our ANOVA model.  This is a simple between subjects design. We are going to map the output to a variable we're calling 'model'.
 
 ```{r}
-data %>% group_by(Condition) %>% summarise(mean(RT), sd(RT))
+model <- aov_4(RT ~ Condition + (1 | Subject), data = my_data)
 ```
 
-We're now going to build our ANOVA model.  This is a simple between subjects design do we can use the inbuilt aov() function. We are going to map the output to a variable we're calling 'model'.
-
-```{r}
-model <- aov(RT ~ Condition, data)
-```
-
-We can now ask for a summary of our model in ANOVA table format using the anova() function.
+We can now ask for a summary of our model in ANOVA table format using the `anova()` function.
 
 ```{r}
 anova(model)
 ```
 
-To interpret our output, we don't need any further comparisons.  Can you think why this is?
+To interpret our output, we don't need any further comparisons as Condition as just two levels.
 
 ## Question 2
 
-Our second datafile is called ANOVA_lab1_data2.csv.  Load it and map it onto a variable called 'data'.
+Let's load our second datafile.  Load it and map it onto a variable called `my_data2`.
 
 ```{r, message=FALSE}
-data <- read_csv("ANOVA_lab1_data2.csv")
+my_data2 <- read_csv("https://bit.ly/2Z8vRoN")
 ```
 
-These data are also from a rection time experiment but with a slightly more complex design.  48 participants responded to a word that differed in how frequent it was.  This factor is between participants and we have four levels coded as 'very low', 'low', 'high', and 'very high'.  Our DV is reaction time and is coded as 'RT'. Subject number is coded as 'Subject'. We want to tell if there is a difference between our conditions (and if so, where that difference lies). 
+These data are also from a rection time experiment but with a slightly more complex design.  48 participants responded to a word that differed in how frequent it was.  This factor is between participants and we have four levels coded as 'very low', 'low', 'high', and 'very high'.  Our DV is reaction time and is coded as 'RT'. Subject number is coded as 'Subject'. We want to know if there is a difference between our conditions (and if so, where that difference lies). 
 
 We need to set our Condition column to a factor.
 
 ```{r}
-data$Condition <- as.factor(data$Condition)
+my_data2$Condition <- as.factor(my_data2$Condition)
 ```
 
 Let's plot the data...
 
 ```{r}
-ggplot(data, aes(x=Condition, y=RT, fill=Condition)) + geom_violin() + 
-  geom_jitter(width=.1, alpha=.5) + stat_summary(fun.data="mean_cl_boot") + guides(fill=FALSE)
+my_data2 %>%
+  ggplot(aes(x = Condition, y = RT, fill = Condition)) + 
+  geom_violin() + 
+  geom_jitter(width = .1, alpha=.5) + 
+  stat_summary(fun.data = "mean_cl_boot") + 
+  guides(fill = FALSE)
 ```
 
-Note that it might be better to swap around the order of the factors in our plot.  We can do that using the factor() function. Let's reorder...
+Note that it might be better to swap around the order of the factors in our plot.  We can do that using the `factor()` function. Let's reorder...
 
 ```{r}
-data$Condition <- factor(data$Condition, levels=c("very low", "low", "high", "very high"))
+my_data2$Condition <- factor(my_data2$Condition, levels = c("very low", "low", "high", "very high"))
 ```
 
 ```{r}
-ggplot(data, aes(x=Condition, y=RT, fill=Condition)) + geom_violin() + 
-  geom_jitter(width=.1, alpha=.5) + stat_summary(fun.data="mean_cl_boot") + guides(fill=FALSE)
+my_data2 %>%
+  ggplot(aes(x = Condition, y = RT, fill = Condition)) + 
+  geom_violin() + 
+  geom_jitter(width = .1, alpha = .5) + 
+  stat_summary(fun.data = "mean_cl_boot") + 
+  guides(fill = FALSE)
 ```
 
 This graph looks better.
 
-Now let's generate some descriptives using describeBy and using tidyverse.
+Now let's generate some descriptives.
 
 ```{r}
-describeBy(data$RT, group=data$Condition)
-data %>% group_by(Condition) %>% summarise (mean(RT), sd(RT))
+my_data2 %>% 
+  group_by(Condition) %>% 
+  summarise(mean_rt = mean(RT), sd_rt = sd(RT))
 ```
 
-Finally, let's build our model. Again it is a between subjects design with one factor so we can just use the inbuilt aov() function.
+Finally, let's build our model. 
 
 ```{r}
-model <- aov(RT ~ Condition, data)
+model <- aov_4(RT ~ Condition + (1 | Subject), data = my_data2)
 anova(model)
 ```
 
-Let's interpret the main effect using the emmeans() function and correcting for multiple comparisons using the Bonferroni correction.
+Let's interpret the main effect using the `emmeans()` function and correcting for multiple comparisons using the Bonferroni correction.
 
 ```{r}
-emmeans(model, pairwise ~ Condition, adjust="Bonferroni")
+emmeans(model, pairwise ~ Condition, adjust = "Bonferroni")
 ```
 
 ## Question 3
 
-Open the datafile ANOVA_lab1_data3.csv and map it onto the variable 'data'.
+Open our third datafile and map it onto the variable `my_data3`.
 
 ```{r, message=FALSE}
-data <- read_csv("ANOVA_lab1_data3.csv")
+my_data3 <- read_csv("https://bit.ly/2N6Z64P")
 ```
 
-These data are from a 2 x 2 repeated measures reaction time experiment.  We were interested in how quickly participants could respond to images that were Large vs. Small and in Colour vs. B & W.  We expect that Large Colour images will be responded to more quickly than Small B & W images.  We're not sure about Small Colour images and Large B & W images.  We measured the response times of 24 participants responding to an image in each of these four conditions.  We want to tell if there is a difference between our conditions (and if so, where that difference lies).  
+These data are from a 2 x 2 repeated measures reaction time experiment.  We were interested in how quickly participants could respond to images that were Large vs. Small and in Colour vs. Black & Wwhite.  We expect that Large Colour images will be responded to more quickly than Small B & W images.  We're not sure about Small Colour images and Large B & W images.  We measured the response times of 24 participants responding to an image in each of these four conditions.  We want to determine if there is a difference between our conditions (and if so, where that difference lies).  
 
 We need to set the two columns (Size and Colour) as factors.
 
 ```{r}
-data$Size <- as.factor(data$Size)
-data$Colour <- as.factor(data$Colour)
+my_data3$Size <- as.factor(my_data3$Size)
+my_data3$Colour <- as.factor(my_data3$Colour)
 ```
 
 First let's plot (and roll)...
 
 ```{r}
-ggplot(data, aes(x=Size:Colour, y=RT, fill=Size:Colour)) + geom_violin() + 
-  geom_jitter(width=.1, alpha=.5) + stat_summary(fun.data="mean_cl_boot", colour="black") + 
-  guides(fill=FALSE) + labs(x="Condition", y="RT (ms.)", title="Violin Plot of Reaction Time (ms.) by Condition\nwith Means and 95% Confidence Intervals") +
+my_data3 %>%
+  ggplot(aes(x = Size:Colour, y = RT, fill = Size:Colour)) + 
+  geom_violin() + 
+  geom_jitter(width = .1, alpha = .5) + 
+  stat_summary(fun.data = "mean_cl_boot", colour = "black") + 
+  guides(fill = FALSE) + 
+  labs(title = "Violin Plot of Reaction Time (ms.) by Condition\nwith Means and 95% Confidence Intervals", x = "Condition", y = "RT (ms.)") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
 Now we're going to generate some descriptives.
 
 ```{r}
-describeBy(data$RT, group=list(data$Size, data$Colour))
-data %>% group_by(Size, Colour) %>% summarise(mean(RT), sd(RT))
+my_data3 %>% 
+  group_by(Size, Colour) %>% 
+  summarise(mean_rt = mean(RT), sd_rt = sd(RT))
 ```
 
-As it is a factorial design we will build our ANOVA model using the aov_4() function in the afex package.  The term (1+Size*Colour|Subject) corresponds to our two repeated measures factors and the fact we're aggregating over our Subjects (this will make more sense when we move onto mixed models using the lme4 package next semester...)
+We will build our ANOVA model using the `aov_4()` function in the afex package.  The term `(1 + Size * Colour | Subject)` corresponds to our two repeated measures factors and the fact we're aggregating over our Subjects.
 
 ```{r}
-model <- aov_4(RT ~ Size*Colour + (1+Size*Colour|Subject), data)
+model <- aov_4(RT ~ Size * Colour + (1 + Size * Colour | Subject), data = my_data3)
 summary(model)
 ```
 
 Our interaction is significant so we run pairwise comparisons to determine where our difference(s) is/are...
 
 ```{r}
-emmeans(model, pairwise ~ Size*Colour, adjust="Bonferroni")
+emmeans(model, pairwise ~ Size * Colour, adjust = "Bonferroni")
 ```
 
 Even with the conservative Bonferroni adjustment, you'll see that every condition differs from every other condition. 
