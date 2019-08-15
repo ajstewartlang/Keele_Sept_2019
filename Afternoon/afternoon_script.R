@@ -139,3 +139,39 @@ rm_data %>%
 
 model <- aov_4(Score ~ Condition + (1 + Condition | Participant), data = rm_data)
 anova(model)
+
+emmeans(model, pairwise ~ Condition, adjust = "Bonferroni")
+
+# Factorial ANOVA ####
+fact_data <- read_csv("https://bit.ly/2H6G4Ie")
+fact_data$Sentence <- as.factor(fact_data$Sentence)
+fact_data$Context <- as.factor(fact_data$Context)
+
+fact_data
+
+fact_data %>%
+  group_by(Context, Sentence) %>%
+  summarise(mean = mean(RT), sd = sd(RT))
+
+visdat::vis_miss(fact_data)
+
+fact_data %>%
+  filter(!is.na(RT)) %>%
+  group_by(Context, Sentence) %>%
+  summarise(mean = mean(RT), sd = sd(RT))
+
+fact_data %>%
+  ggplot(aes(x = Context:Sentence, y = RT, colour = Context:Sentence)) +
+  geom_violin() +
+  geom_jitter(width = .1, alpha = .25) +
+  guides(colour = FALSE) +
+  stat_summary(fun.data = "mean_cl_boot", colour = "black") +
+  theme(text = element_text(size = 15), axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(x = "Condition")
+
+model <- aov_4(RT ~ Context * Sentence + (1 + Context * Sentence | Subject), data = fact_data, na.rm = TRUE)
+anova(model)
+
+emmeans(model, pairwise ~ Sentence * Context, adjust = "none")
+
+
