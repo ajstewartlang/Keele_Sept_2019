@@ -25,7 +25,7 @@ https://www.kaggle.com/sandeep04201988/housing-price-index-using-crime-rate-data
 We can use the function `head()` to display the first few rows of our dataset called "crime".
 
 ```{r, message=FALSE}
-crime <- read_csv("https://www.kaggle.com/sandeep04201988/housing-price-index-using-crime-rate-data/version/1")
+crime <- read_csv("https://bit.ly/2Z5zQlY")
 head(crime)
 ```
 
@@ -143,9 +143,7 @@ library(afex)
 library(emmeans)
 ```
 
-## Question 1
-
-Now you need to load our first data file.  When we load it, we assign it to a new variable we're caloing `my_data`. Note, the bitly link is just a short cut to where the datafile is in my GitHub account (https://raw.githubusercontent.com/ajstewartlang/Keele_Sept_2019/master/Afternoon/ANOVA_data1.csv).
+We need to load our first data file.  When we load it, we assign it to a new variable we're caloing `my_data`. Note, the bitly link is just a short cut to where the datafile is in my GitHub account (https://raw.githubusercontent.com/ajstewartlang/Keele_Sept_2019/master/Afternoon/ANOVA_data1.csv).
 
 ```{r, message=FALSE}
 my_data <- read_csv("https://bit.ly/2YZRibL")
@@ -197,8 +195,6 @@ anova(model)
 ```
 
 To interpret our output, we don't need any further comparisons as Condition as just two levels.
-
-## Question 2
 
 Let's load our second datafile.  Load it and map it onto a variable called `my_data2`.
 
@@ -263,9 +259,7 @@ Let's interpret the main effect using the `emmeans()` function and correcting fo
 emmeans(model, pairwise ~ Condition, adjust = "Bonferroni")
 ```
 
-## Question 3
-
-Open our third datafile and map it onto the variable `my_data3`.
+Load the third datafile and map it onto the variable `my_data3`.
 
 ```{r, message=FALSE}
 my_data3 <- read_csv("https://bit.ly/2N6Z64P")

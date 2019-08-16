@@ -174,4 +174,7 @@ anova(model)
 
 emmeans(model, pairwise ~ Sentence * Context, adjust = "none")
 
+# ANCOVA
+
+
 
