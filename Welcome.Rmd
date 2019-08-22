@@ -30,7 +30,7 @@ https://www.rstudio.com/products/rstudio/download/#download
 
 <br>
 
-##The Course Material
+##Download The Course Material
 
 In advance of the course, you can download the course content by clicking on the "Clone or download" buton on my GitHub page and then selecting "Download ZIP". 
 
@@ -43,6 +43,26 @@ https://github.com/ajstewartlang/Keele_Sept_2019
 Here you'll find separate Morning and Afternoon folders.  The Morning and Afternoon folders contain the slides, and data I use in the slides. Additionally, you'll also find a _Cheat Sheets and Handy Guides_ folder which contains a number of helpful reference resources, and a Quick Start guide to begin working with R.
 
 In the morning we'll cover the basics of R, data wrangling, and data visualisation. In the afternoon we'll look at some standard methods using the general lienar model.  This introductory workship will provide you with the skills needed to start working with R, the RStudio environment, and some basic statistical models.
+
+<br>
+
+##View The Course Material
+
+###Morning Session
+
+You can see the slides for the morning session here:
+
+And the first Worksheet here:
+
+http://ajstewartlang.github.io/Keele_2019/worksheets/worksheet1.html
+
+###Afternoon Session
+
+You can see the slides for the afternoon session here.
+
+And the second Worksheet here:
+
+http://ajstewartlang.github.io/Keele_2019/worksheets/worksheet2.html
 
 <br>
 

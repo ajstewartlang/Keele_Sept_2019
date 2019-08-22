@@ -1,7 +1,7 @@
 library(tidyverse)
 library(viridis)
 
-# Data tidying and wranling ####
+# Data tidying and wrangling ####
 # Create data for 10,000 people - each with measures of Working Memory (WM), IQ, and 
 # reading Comprehension (Comp)
 
