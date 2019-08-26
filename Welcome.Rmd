@@ -1,6 +1,6 @@
 ---
 title: "Andrew's One-Day R Course at Keele"
-author: "Andrew.Stewart@manchester.ac.uk"
+author: "https://ajstewartlang.netlify.com"
 output: html_document
 ---
 
@@ -9,12 +9,12 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 ##Welcome!
 
-September 9th, 2019
+#####September 9th, 2019
 
-Location: Dorothy Hodgkin 0.31
+#####Location: Dorothy Hodgkin 0.31
 
-Morning Session 1000-1230(ish) <br>
-Afternoon Session 1345-1630(ish)
+#####Morning Session 1000-1230(ish) <br>
+#####Afternoon Session 1345-1630(ish)
 
 <br>
 
@@ -30,41 +30,35 @@ https://www.rstudio.com/products/rstudio/download/#download
 
 <br>
 
-##Download The Course Material
+##The Course Material
 
-In advance of the course, you can download the course content by clicking on the "Clone or download" buton on my GitHub page and then selecting "Download ZIP". 
+You can download all the slides, R scripts, R Markdown scripts, and datasets that I use by clicking on the "Clone or download" buton on my GitHub repo and then selecting "Download ZIP". 
 
 https://github.com/ajstewartlang/Keele_Sept_2019
-
 
 ![](icon.png)
 
 <br>
-Here you'll find separate Morning and Afternoon folders.  The Morning and Afternoon folders contain the slides, and data I use in the slides. Additionally, you'll also find a _Cheat Sheets and Handy Guides_ folder which contains a number of helpful reference resources, and a Quick Start guide to begin working with R.
+Here you'll find separate Morning and Afternoon folders.  The Morning and Afternoon folders contain the slides, R and R Markdown scripts, and the data I use in the slides. Additionally, you'll also find a _Cheat Sheets and Handy Guides_ folder which contains a number of helpful reference resources, and a Quick Start guide to begin working with R.
 
-In the morning we'll cover the basics of R, data wrangling, and data visualisation. In the afternoon we'll look at some standard methods using the general lienar model.  This introductory workship will provide you with the skills needed to start working with R, the RStudio environment, and some basic statistical models.
+In the morning we'll cover the motivation begind engaging in reproducible research methods, the basics of R, data wrangling, and data visualisation. In the afternoon we'll look at some standard statistical methods using the general linear model.  
+
+We will finish off by looking at how you can use Binder and GitHub to engage in fully reproducible research. 
 
 <br>
 
-##View The Course Material
+###Worksheets 
 
-###Morning Session
-
-You can see the slides for the morning session here:
-
-And the first Worksheet here:
+You can view the first worksheet here:
 
 http://ajstewartlang.github.io/Keele_2019/worksheets/worksheet1.html
 
-###Afternoon Session
-
-You can see the slides for the afternoon session here.
-
-And the second Worksheet here:
+And the second worksheet here:
 
 http://ajstewartlang.github.io/Keele_2019/worksheets/worksheet2.html
 
 <br>
+
 
 ##Online R Resources
 
